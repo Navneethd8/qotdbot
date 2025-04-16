@@ -2,7 +2,7 @@ import os
 import discord
 from discord.ext import commands, tasks
 import google.generativeai as genai
-from datetime import datetime, time
+from datetime import time
 import zoneinfo
 import asyncio
 import logging
@@ -51,39 +51,39 @@ async def generate_question():
         logger.error(f"Error generating question: {e}")
         return "What's something you've learned recently that surprised you?"  # Fallback question
 
-    
-@tasks.loop(time=scheduled_time)
-async def post_question_of_the_day():
-    """Post the question of the day at the scheduled time"""
-    try:
-        logger.info(f"Task triggered at {datetime.now()}")
-        channel = bot.get_channel(int(os.getenv('QUESTION_CHANNEL_ID', '0')))
-        if not channel:
-            logger.error(f"Channel with ID {QUESTION_CHANNEL_ID} not found")
-            return
+# commented out code for when we want to do a auto daily qotd but ignore for now
+# @tasks.loop(time=scheduled_time)
+# async def post_question_of_the_day():
+#     """Post the question of the day at the scheduled time"""
+#     try:
+#         logger.info(f"Task triggered at {datetime.now()}")
+#         channel = bot.get_channel(int(os.getenv('QUESTION_CHANNEL_ID', '0')))
+#         if not channel:
+#             logger.error(f"Channel with ID {QUESTION_CHANNEL_ID} not found")
+#             return
             
-        question = await generate_question()
+#         question = await generate_question()
 
-        message = f"**@here**\n\n**✨Question of the Day✨**\n\n{question}\n\n"
+#         message = f"**@here**\n\n**✨Question of the Day✨**\n\n{question}\n\n"
         
-        await channel.send(message)
+#         await channel.send(message)
 
         
-        logger.info(f"Posted question of the day: {question}")
-    except Exception as e:
-        logger.error(f"Error posting question: {e}")
+#         logger.info(f"Posted question of the day: {question}")
+#     except Exception as e:
+#         logger.error(f"Error posting question: {e}")
 
-@post_question_of_the_day.before_loop
-async def before_post_question():
-    """Wait until the bot is ready before starting the task"""
-    await bot.wait_until_ready()
-    logger.info("Question of the day task is ready")
+# @post_question_of_the_day.before_loop
+# async def before_post_question():
+#     """Wait until the bot is ready before starting the task"""
+#     await bot.wait_until_ready()
+#     logger.info("Question of the day task is ready")
 
 @bot.event
 async def on_ready():
     """Called when the bot is ready"""
     logger.info(f"Logged in as {bot.user.name}")
-    post_question_of_the_day.start()
+    # post_question_of_the_day.start()
 
 @bot.command(name="qotd")
 @commands.has_permissions(administrator=True)
@@ -91,7 +91,7 @@ async def manual_question(ctx):
     """Manually trigger a question of the day"""
     question = await generate_question()
     
-    message = f"**@here**\n\n**✨Question of the Day✨**\n\n{question}\n\n"
+    message = f"**@here****✨Question of the Day✨**\n\n{question}\n\n"
     
     await ctx.send(message)
     
